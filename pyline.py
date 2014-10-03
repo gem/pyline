@@ -5,6 +5,7 @@ class Pyline:
     ST_BEGIN=0
     ST_TRIPLE=1
     ST_QUOTE=2
+    ST_COMMENT=3
 
     def __init__(self, name_in, name_out):
         self.name_in = name_in
@@ -40,7 +41,11 @@ class Pyline:
                         out += s[i+1]
                         i += 2
                         continue
-                if s[i] == '"' or s[i] == "'":
+                if s[i] == '#':
+                    st = self.ST_COMMENT
+                    out += s[i]
+
+                elif s[i] == '"' or s[i] == "'":
                     what_quote = s[i]
                     out += s[i]
                     st = self.ST_QUOTE
@@ -111,7 +116,10 @@ class Pyline:
                         i += 1
                 else:
                     out += s[i]
-                    
+            elif st == self.ST_COMMENT:
+                if s[i] == '\n':
+                    st = self.ST_BEGIN
+                out += s[i]
                 
             # end of while i < ct ...
             i += 1
